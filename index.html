@@ -55,9 +55,9 @@
             color: white; 
             padding: 10px; 
             font-weight: 700; 
-            margin-bottom: 10px; 
-            font-size: 1.25rem;
-            border-radius: 0.25rem;
+            margin-bottom: 0; /* Removed margin */
+            font-size: 1.125rem; /* Reduced from 1.25rem */
+            border-radius: 0.25rem 0.25rem 0 0; /* Align with table */
         }
 
         /* Hidden PDF template for clean report capture. Fixed A4 width. */
@@ -68,7 +68,43 @@
             padding: 20px;
             box-sizing: border-box;
             background-color: #ffffff; /* Ensure it has a white background for capture */
+            font-family: 'Inter', sans-serif; /* Ensure font is applied */
         }
+
+        /* PDF Table Styles */
+        #pdf-template table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            font-size: 12px; /* Reduced from 14px */
+        }
+        #pdf-template th, #pdf-template td {
+            border: 1px solid #ddd;
+            padding: 6px; /* Reduced from 8px */
+            text-align: left;
+            /* Ensure text wrapping */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        #pdf-template th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        #pdf-template .pdf-section h2 {
+            border-bottom: 2px solid #004b8d;
+            padding-bottom: 4px;
+            font-size: 1.125rem; /* Reduced from 1.25rem */
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        #pdf-template .pdf-section {
+            border-bottom: none; /* Remove old border, tables will separate sections */
+            padding-top: 0;
+        }
+        #pdf-template .final-summary-table td {
+             border: 1px solid #ddd;
+        }
+        /* End PDF Table Styles */
 
         /* Simple toggle switch */
         .toggle-switch {
@@ -297,7 +333,15 @@
                     <div class="flex justify-between border-t pt-2 border-gray-200"><span class="font-medium">- Deductible Boat-Loaded Expenses</span><span id="p-deductible-expenses" class="text-red-600">0.00 LKR</span></div>
                     <!-- Balance 2 color changed to blue -->
                     <div class="flex justify-between total-box bg-blue-50 border-blue-600"><span class="font-medium">Balance (After Expenses)</span><span id="p-balance-2" class="font-extrabold text-blue-700">0.00 LKR</span></div>
-                    <div class="flex justify-between border-t pt-2 border-gray-200"><span class="font-medium">- 5% Skipper Commission (on Balance 2)</span><span id="p-skeeper-commission" class="text-red-600">0.00 LKR</span></div>
+                    
+                    <!-- Editable Skipper Commission -->
+                    <div class="flex justify-between items-center border-t pt-2 border-gray-200">
+                        <label for="skipper-commission-rate" class="font-medium flex-shrink-0">- Skipper Commission (%)</label>
+                        <input type="number" id="skipper-commission-rate" value="5" oninput="report.updateSkipperCommission(this.value)"
+                               class="p-1 border border-gray-300 rounded-lg w-20 text-right mx-2">
+                        <span id="p-skipper-commission" class="text-red-600 font-medium">0.00 LKR</span>
+                    </div>
+
                     <div class="flex justify-between total-box bg-yellow-100 border-yellow-600 text-xl md:text-2xl"><span class="font-bold">Final Distributable Balance</span><span id="p-final-balance" class="font-extrabold text-yellow-800">0.00 LKR</span></div>
                     <div class="h-4"></div>
                     <div class="flex justify-between border-t pt-4 border-gray-400"><span class="font-bold text-gray-700">Owner's Share (50% of Final Balance)</span><span id="p-owner-profit" class="font-extrabold text-blue-700">0.00 LKR</span></div>
@@ -361,19 +405,25 @@
     -->
     <div id="pdf-template">
         <div class="text-center mb-6">
-            <h1 id="pdf-report-title" class="text-3xl font-bold text-gray-800">ARRIVAL REPORT</h1>
-            <p id="pdf-board-date" class="text-lg text-gray-600">Board: N/A | Date: N/A</p>
+            <h1 id="pdf-report-title" class="text-2xl font-bold text-gray-800">ARRIVAL REPORT</h1> <!-- Reduced from 3xl -->
+            <p id="pdf-board-date" class="text-base text-gray-600">Board: N/A | Date: N/A</p> <!-- Reduced from lg -->
         </div>
         <div class="pdf-header">Summary of Financial Activity (LKR)</div>
 
         <!-- REVENUE SECTION (Table Layout) -->
         <div class="pdf-section">
             <h2 class="text-xl font-bold mb-2">Net Sales (Revenue)</h2>
-            <table class="min-w-full" style="font-size: 14px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
                 <tbody id="pdf-sales-breakdown">
                     <!-- JS renders sales rows here -->
                 </tbody>
-                <tfoot class="font-bold border-t-2 border-gray-400">
+                <tfoot class="font-bold">
                     <tr class="bg-gray-100">
                         <td class="py-2 px-1">Total Net Sales</td>
                         <td class="text-right py-2 px-1" id="pdf-net-sales-total">0.00 LKR</td>
@@ -385,9 +435,12 @@
         <!-- EXPENSES SECTION (Table Layout) -->
         <div class="pdf-section">
             <h2 class="text-xl font-bold mt-4 mb-2">Expenditure</h2>
-            <table class="min-w-full" style="font-size: 14px;">
+            <table>
                 <thead>
-                    <tr><th colspan="2" class="text-left font-bold py-1">Boat Departure Expenditure</th></tr>
+                    <tr>
+                        <th>Boat Departure Expenditure</th>
+                        <th>Amount</th>
+                    </tr>
                 </thead>
                 <tbody id="pdf-blc-breakdown">
                     <!-- JS renders blc rows here -->
@@ -398,21 +451,24 @@
                 <tbody id="pdf-diesel-breakdown">
                     <!-- JS renders diesel row here -->
                 </tbody>
-                <tfoot class="font-bold border-t border-gray-400">
+                <tfoot class="font-bold">
                     <tr class="bg-gray-100">
                         <td class="py-2 px-1">Total Deductible Expenses</td>
                         <td class="text-right py-2 px-1" id="pdf-total-deductible-expenses">0.00 LKR</td>
                     </tr>
                 </tfoot>
             </table>
-            <table class="min-w-full mt-4" style="font-size: 14px;">
+            <table class="mt-4">
                 <thead>
-                    <tr><th colspan="2" class="text-left font-bold py-1">Other Expenditure</th></tr>
+                    <tr>
+                        <th>Other Expenditure</th>
+                        <th>Amount</th>
+                    </tr>
                 </thead>
                 <tbody id="pdf-salaries-breakdown">
                     <!-- JS renders salaries rows here -->
                 </tbody>
-                <tfoot class="font-bold border-t border-gray-400">
+                <tfoot class="font-bold">
                     <tr class="bg-gray-100">
                         <td class="py-2 px-1">Total Salaries/Wages Paid</td>
                         <td class="text-right py-2 px-1" id="pdf-salaries-total">0.00 LKR</td>
@@ -424,17 +480,23 @@
         <!-- LIABILITIES SECTION (Table Layout) -->
         <div class="pdf-section">
             <h2 class="text-xl font-bold mt-4 mb-2">Liabilities</h2>
-            <table class="min-w-full" style="font-size: 14px;">
+            <table>
                 <thead>
-                    <tr><th colspan="2" class="text-left font-bold py-1">Loans Settled</th></tr>
+                    <tr>
+                        <th>Loans Settled</th>
+                        <th>Amount</th>
+                    </tr>
                 </thead>
                 <tbody id="pdf-loans-settled-breakdown">
                     <!-- JS renders loans settled rows here -->
                 </tbody>
             </table>
-            <table class="min-w-full mt-4" style="font-size: 14px;">
+            <table class="mt-4">
                 <thead>
-                    <tr><th colspan="2" class="text-left font-bold py-1">Pending Loans (Due)</th></tr>
+                    <tr>
+                        <th>Pending Loans (Due)</th>
+                        <th>Amount</th>
+                    </tr>
                 </thead>
                 <tbody id="pdf-pending-loans-breakdown">
                     <!-- JS renders pending loans rows here -->
@@ -445,22 +507,28 @@
         <!-- BOAT VALUE & REPAIRS SECTION (Table Layout) -->
         <div class="pdf-section">
             <h2 class="text-xl font-bold mt-4 mb-2">Boat Value & Repairs</h2>
-            <table class="min-w-full" style="font-size: 14px;">
+            <table>
                 <thead>
-                    <tr><th colspan="2" class="text-left font-bold py-1">Boat Value (Investments)</th></tr>
+                    <tr>
+                        <th>Boat Value (Investments)</th>
+                        <th>Amount</th>
+                    </tr>
                 </thead>
                 <tbody id="pdf-boat-value-breakdown">
                     <!-- JS renders boat value rows here -->
                 </tbody>
             </table>
-            <table class="min-w-full mt-4" style="font-size: 14px;">
+            <table class="mt-4">
                 <thead>
-                    <tr><th colspan="2" class="text-left font-bold py-1">Boat Repairs</th></tr>
+                    <tr>
+                        <th>Boat Repairs</th>
+                        <th>Amount</th>
+                    </tr>
                 </thead>
                 <tbody id="pdf-repairs-breakdown">
                     <!-- JS renders repairs rows here -->
                 </tbody>
-                <tfoot class="font-bold border-t border-gray-400">
+                <tfoot class="font-bold">
                     <tr class="bg-gray-100">
                         <td class="py-2 px-1">Total Value/Repairs</td>
                         <td class="text-right py-2 px-1" id="pdf-value-repair-total">0.00 LKR</td>
@@ -469,27 +537,32 @@
             </table>
         </div>
         
-        <!-- SUMMARY / PROFIT FLOW (Already a table, no changes) -->
+        <!-- SUMMARY / PROFIT FLOW -->
         <div class="pdf-header mt-8">Profit & Loss Distribution</div>
         <div class="pdf-section">
-            <table class="min-w-full" style="font-size: 14px;">
+            <table>
                 <tr class="bg-white"><td class="font-medium py-2 px-1">Net Sales</td><td class="text-right py-2 px-1" id="s-net-sales-pdf">0.00 LKR</td></tr>
                 <tr class="bg-gray-50"><td class="font-medium text-red-600 py-2 px-1">- Market Commission (<span id="s-market-comm-rate-pdf">5</span>%)</td><td class="text-right text-red-600 py-2 px-1" id="s-market-commission-pdf">0.00 LKR</td></tr>
-                <tr class="font-bold bg-white"><td class="border-t pt-1 py-2 px-1">Balance 1</td><td class="border-t pt-1 text-right py-2 px-1" id="s-balance1-pdf">0.00 LKR</td></tr>
+                <tr class="font-bold bg-white"><td class="py-2 px-1">Balance 1</td><td class="text-right py-2 px-1" id="s-balance1-pdf">0.00 LKR</td></tr>
                 <tr class="bg-gray-50"><td class="font-medium text-red-600 py-2 px-1">- Deductible Departure Expenses</td><td class="text-right text-red-600 py-2 px-1" id="s-deductible-expenses-pdf">0.00 LKR</td></tr>
-                <tr class="font-bold bg-white"><td class="border-t pt-1 py-2 px-1">Balance 2</td><td class="border-t pt-1 text-right py-2 px-1" id="s-balance2-pdf">0.00 LKR</td></tr>
-                <tr class="bg-gray-50"><td class="font-medium text-red-600 py-2 px-1">- 5% Skipper Commission</td><td class="text-right text-red-600 py-2 px-1" id="s-skeeper-commission-pdf">0.00 LKR</td></tr>
-                <tr class="font-extrabold text-lg bg-white"><td class="border-t-2 pt-2 py-2 px-1">Final Balance</td><td class="border-t-2 pt-2 text-right py-2 px-1" id="s-final-balance-pdf">0.00 LKR</td></tr>
-                <tr class="font-extrabold text-blue-700 text-lg bg-gray-50"><td class="border-t-2 pt-2 py-2 px-1">Owner's Share (50%)</td><td class="border-t-2 pt-2 text-right py-2 px-1" id="s-owner-profit-pdf">0.00 LKR</td></tr>
+                <tr class="font-bold bg-white"><td class="py-2 px-1">Balance 2</td><td class="text-right py-2 px-1" id="s-balance2-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-50"><td class="font-medium text-red-600 py-2 px-1">- <span id="s-skipper-comm-rate-pdf">5</span>% Skipper Commission</td><td class="text-right text-red-600 py-2 px-1" id="s-skipper-commission-pdf">0.00 LKR</td></tr>
+                <tr class="font-extrabold text-base bg-white"><td class="py-2 px-1">Final Balance</td><td class="text-right py-2 px-1" id="s-final-balance-pdf">0.00 LKR</td></tr> <!-- Reduced from lg -->
+                <tr class="font-extrabold text-blue-700 text-base bg-gray-50"><td class="py-2 px-1">Owner's Share (50%)</td><td class="text-right py-2 px-1" id="s-owner-profit-pdf">0.00 LKR</td></tr> <!-- Reduced from lg -->
             </table>
 
-            <!-- Crew Distribution (Table Layout) -->
-            <h3 class="text-lg font-bold mt-4">Crew Salary Distribution (50% Remaining)</h3>
-            <table class="min-w-full" style="font-size: 14px;">
+            <h3 class="text-base font-bold mt-4 mb-2">Crew Salary Distribution (50% Remaining)</h3> <!-- Reduced from lg -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Crew Member</th>
+                        <th>Share</th>
+                    </tr>
+                </thead>
                 <tbody id="pdf-crew-breakdown">
                     <!-- JS renders crew rows here -->
                 </tbody>
-                <tfoot class="font-bold border-t border-gray-400">
+                <tfoot class="font-bold">
                     <tr class="bg-gray-100">
                         <td class="py-2 px-1">Total Crew Share</td>
                         <td class="text-right py-2 px-1" id="s-crew-total-pdf">0.00 LKR</td>
@@ -498,9 +571,9 @@
             </table>
         </div>
 
-        <!-- FINAL SUMMARY TABLE (Already a table, no changes) -->
+        <!-- FINAL SUMMARY TABLE -->
         <div class="pdf-header mt-8">Final Summary (Profit/Loss Metrics)</div>
-        <table class="min-w-full text-base" style="font-size: 14px;">
+        <table class="final-summary-table">
             <tbody class="divide-y divide-gray-200">
                 <tr class="bg-white"><td class="px-2 py-2 font-bold">Net Sales</td><td class="px-2 py-2 text-right" id="sum-net-sales-pdf">0.00 LKR</td></tr>
                 <tr class="bg-gray-50"><td class="px-2 py-2 font-bold">Boat Departure Expenditure</td><td class="px-2 py-2 text-right" id="sum-departure-expenditure-pdf">0.00 LKR</td></tr>
@@ -510,15 +583,21 @@
                 <tr class="bg-gray-50"><td class="px-2 py-2 font-bold">Settled Loans</td><td class="px-2 py-2 text-right" id="sum-settled-loans-pdf">0.00 LKR</td></tr>
                 <tr class="bg-white"><td class="px-2 py-2 font-bold">Due Loans (Pending)</td><td class="px-2 py-2 text-right" id="sum-due-loans-pdf">0.00 LKR</td></tr>
                 <tr class="bg-gray-50"><td class="px-2 py-2 font-bold">Salary / Wages</td><td class="px-2 py-2 text-right" id="sum-salary-wages-pdf">0.00 LKR</td></tr>
-                <tr class="bg-blue-100 font-bold"><td class="px-2 py-2">Owner's Share (50% Split)</td><td class="px-2 py-2 text-right text-lg text-blue-700" id="sum-profit-loss-pdf">0.00 LKR</td></tr>
+                <tr class="bg-blue-100 font-bold">
+                    <td class="px-2 py-2">Owner's Share (50% Split)</td>
+                    <td class="px-2 py-2 text-right text-base text-blue-700" id="sum-profit-loss-pdf">0.00 LKR</td> <!-- Reduced from lg -->
+                </tr>
                 <!-- Net Profit Row (color logic in JS) -->
-                <tr class="bg-gray-200 font-bold"><td class="px-2 py-2">FINAL NET OWNER PROFIT/LOSS</td><td class="px-2 py-2 text-right text-lg" id="sum-net-owner-profit-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-200 font-bold">
+                    <td class="px-2 py-2">FINAL NET OWNER PROFIT/LOSS</td>
+                    <td class="px-2 py-2 text-right text-base" id="sum-net-owner-profit-pdf">0.00 LKR</td> <!-- Reduced from lg -->
+                </tr>
             </tbody>
         </table>
 
         <div class="mt-8 pt-4 border-t border-gray-300">
-            <h3 class="text-lg font-bold mb-2">Note:</h3>
-            <p id="pdf-note-content" class="text-sm italic"></p>
+            <h3 class="text-base font-bold mb-2">Note:</h3> <!-- Reduced from lg -->
+            <p id="pdf-note-content" class="text-xs italic"></p> <!-- Reduced from sm -->
         </div>
 
     </div>
@@ -613,6 +692,7 @@
                     date: new Date().toISOString().substring(0, 10),
                     boardName: '',
                     marketCommissionRate: 5, // New field, default 5%
+                    skipperCommissionRate: 5, // New field, default 5%
                     boatLoadedCosts: [],
                     extraExpenses: [],
                     diesel: { liters: 0, pricePerLiter: 277, totalCost: 0 },
@@ -636,6 +716,7 @@
                 document.getElementById('arrival-date').value = this.data.date;
                 document.getElementById('board-name').value = this.data.boardName;
                 document.getElementById('market-commission-rate').value = this.data.marketCommissionRate;
+                document.getElementById('skipper-commission-rate').value = this.data.skipperCommissionRate;
                 document.getElementById('diesel-liters').value = this.data.diesel.liters;
                 document.getElementById('report-note').value = this.data.note;
             }
@@ -801,6 +882,12 @@
                 this.saveReport();
             }
             
+            updateSkipperCommission(rate) {
+                this.data.skipperCommissionRate = parseFloat(rate) || 0;
+                this.updateAll(); // Recalculate everything
+                this.saveReport();
+            }
+            
             updateNote(noteValue) {
                 this.data.note = noteValue;
                 this.saveReport(); // Auto-save on note change
@@ -836,7 +923,7 @@
             calculateProfitFlow() {
                 const netSales = this.calculateNetSales();
                 const marketCommissionRate = (this.data.marketCommissionRate || 0) / 100;
-                const skeeperCommissionRate = 0.05;
+                const skipperCommissionRate = (this.data.skipperCommissionRate || 0) / 100;
 
                 const boatLoadedCostTotal = this.sumAmounts('boatLoadedCosts');
                 const extraExpensesTotal = this.sumAmounts('extraExpenses');
@@ -853,8 +940,8 @@
 
                 // 3. Skeeper Commission (only on positive balance)
                 const commissionBase = balance2 > 0 ? balance2 : 0;
-                const skeeperCommission = commissionBase * skeeperCommissionRate;
-                const finalBalance = commissionBase - skeeperCommission;
+                const skipperCommission = commissionBase * skipperCommissionRate;
+                const finalBalance = commissionBase - skipperCommission;
 
                 // 4. Owner's Profit (50%)
                 const ownersProfit = finalBalance > 0 ? finalBalance * 0.5 : 0;
@@ -880,7 +967,7 @@
 
                 return {
                     netSales, marketCommission, balance1, deductibleExpenses, balance2,
-                    skeeperCommission, finalBalance, ownersProfit, crewShareTotal,
+                    skipperCommission, finalBalance, ownersProfit, crewShareTotal,
                     netOwnerProfit // Return the new value
                 };
             }
@@ -999,7 +1086,7 @@
                 document.getElementById('p-balance-1').textContent = this.formatLKR(profit.balance1);
                 document.getElementById('p-deductible-expenses').textContent = `-${this.formatLKR(profit.deductibleExpenses)}`;
                 document.getElementById('p-balance-2').textContent = this.formatLKR(profit.balance2);
-                document.getElementById('p-skeeper-commission').textContent = `-${this.formatLKR(profit.skeeperCommission)}`;
+                document.getElementById('p-skipper-commission').textContent = `-${this.formatLKR(profit.skipperCommission)}`;
                 document.getElementById('p-final-balance').textContent = this.formatLKR(profit.finalBalance);
                 document.getElementById('p-owner-profit').textContent = this.formatLKR(profit.ownersProfit);
                 document.getElementById('p-crew-total').textContent = this.formatLKR(profit.crewShareTotal);
@@ -1065,7 +1152,7 @@
             const container = document.getElementById(elementId);
             const entries = report.data[key];
             if (entries.length === 0) {
-                container.innerHTML = `<tr><td colspan="2" class="py-1 italic text-gray-500">No entries</td></tr>`;
+                container.innerHTML = `<tr><td colspan="2" class="py-2 px-1 italic text-gray-500">No entries</td></tr>`;
                 return;
             }
             container.innerHTML = entries.map((item, index) => `
@@ -1093,7 +1180,7 @@
                 </tr>
             `).join('');
             if(report.data.sales.length === 0) {
-                 document.getElementById('pdf-sales-breakdown').innerHTML = `<tr><td colspan="2" class="py-1 italic text-gray-500">No sales entries</td></tr>`;
+                 document.getElementById('pdf-sales-breakdown').innerHTML = `<tr><td colspan="2" class="py-2 px-1 italic text-gray-500">No sales entries</td></tr>`;
             }
             document.getElementById('pdf-net-sales-total').textContent = report.formatLKR(profit.netSales);
 
@@ -1130,18 +1217,19 @@
             document.getElementById('s-balance1-pdf').textContent = report.formatLKR(profit.balance1);
             document.getElementById('s-deductible-expenses-pdf').textContent = `-${report.formatLKR(profit.deductibleExpenses)}`;
             document.getElementById('s-balance2-pdf').textContent = report.formatLKR(profit.balance2);
-            document.getElementById('s-skeeper-commission-pdf').textContent = `-${report.formatLKR(profit.skeeperCommission)}`;
+            document.getElementById('s-skipper-comm-rate-pdf').textContent = report.data.skipperCommissionRate;
+            document.getElementById('s-skipper-commission-pdf').textContent = `-${report.formatLKR(profit.skipperCommission)}`;
             document.getElementById('s-final-balance-pdf').textContent = report.formatLKR(profit.finalBalance);
             document.getElementById('s-owner-profit-pdf').textContent = report.formatLKR(profit.ownersProfit);
             
             document.getElementById('pdf-crew-breakdown').innerHTML = report.data.crew.map((c, index) => `
                 <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
-                    <td class="py-2 px-1 text-sm">- ${c.name}</td>
-                    <td class="text-right py-2 px-1 text-sm">${report.formatLKR(c.share)}</td>
+                    <td class="py-2 px-1 text-xs">- ${c.name}</td> <!-- Reduced from sm -->
+                    <td class="text-right py-2 px-1 text-xs">${report.formatLKR(c.share)}</td> <!-- Reduced from sm -->
                 </tr>
             `).join('');
              if(report.data.crew.length === 0) {
-                 document.getElementById('pdf-crew-breakdown').innerHTML = `<tr><td colspan="2" class="py-1 italic text-gray-500">No crew members</td></tr>`;
+                 document.getElementById('pdf-crew-breakdown').innerHTML = `<tr><td colspan="2" class="py-2 px-1 italic text-gray-500">No crew members</td></tr>`;
             }
             document.getElementById('s-crew-total-pdf').textContent = report.formatLKR(profit.crewShareTotal);
 
@@ -1254,4 +1342,3 @@
 </body>
 
 </html>
-
