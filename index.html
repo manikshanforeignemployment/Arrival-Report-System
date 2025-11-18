@@ -37,6 +37,7 @@
             padding: 10px 0; 
             border-bottom: 1px solid #ddd; 
         }
+        /* pdf-item is no longer the primary layout, but keep for tables */
         .pdf-item { 
             display: flex; 
             justify-content: space-between; 
@@ -50,7 +51,7 @@
             border-top: 1px solid #ccc;
         }
         .pdf-header { 
-            background-color: #004d40; /* Dark Teal */
+            background-color: #004b8d; /* Dark Blue (Changed from Dark Teal) */
             color: white; 
             padding: 10px; 
             font-weight: 700; 
@@ -68,6 +69,36 @@
             box-sizing: border-box;
             background-color: #ffffff; /* Ensure it has a white background for capture */
         }
+
+        /* Simple toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .toggle-switch input { display: none; }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider { background-color: #2196F3; }
+        input:checked + .toggle-slider:before { transform: translateX(22px); }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -87,7 +118,8 @@
                         Clear Data
                     </button>
                 </div>
-                <span id="save-message" class="text-sm pt-2 sm:pt-0 font-medium text-green-600"></span>
+                <!-- Save message color changed to blue -->
+                <span id="save-message" class="text-sm pt-2 sm:pt-0 font-medium text-blue-600"></span>
             </div>
             <!-- Download PDF button removed from here -->
         </div>
@@ -95,11 +127,19 @@
         <!-- The main content container (Interactive Form) -->
         <div id="interactive-content" class="space-y-8">
 
-            <!-- Date Section -->
-            <div class="section-card p-6">
-                <label for="arrival-date" class="block text-lg font-medium text-gray-700 mb-2">Arrival Date</label>
-                <input type="date" id="arrival-date" onchange="report.updateDate(this.value)"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+            <!-- Report Info Section -->
+            <div class="section-card p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="board-name" class="block text-lg font-medium text-gray-700 mb-2">Board Name</label>
+                    <input type="text" id="board-name" oninput="report.updateBoardName(this.value)"
+                           placeholder="Enter board/boat name"
+                           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                </div>
+                <div>
+                    <label for="arrival-date" class="block text-lg font-medium text-gray-700 mb-2">Arrival Date</label>
+                    <input type="date" id="arrival-date" onchange="report.updateDate(this.value)"
+                           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+                </div>
             </div>
 
             <!-- Expense Input Card (Sections 1, 2) -->
@@ -111,7 +151,7 @@
                     <div class="flex flex-col sm:flex-row items-center sm:space-x-4 mt-4 space-y-2 sm:space-y-0">
                         <input type="text" id="blc-desc" placeholder="Description (e.g., Ice)" class="p-2 border border-gray-300 rounded-lg flex-grow w-full">
                         <input type="number" id="blc-amount" placeholder="Amount (LKR)" class="p-2 border border-gray-300 rounded-lg w-full sm:w-32" min="0">
-                        <button onclick="report.addEntry('boatLoadedCosts', 'blc-desc', 'blc-amount')" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
+                        <button onclick="report.addEntry('boatLoadedCosts', 'blc-desc', 'blc-amount')" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
                     </div>
                     <div class="total-box mt-4">Total Boat Loaded Cost: <span id="blc-total">0.00 LKR</span></div>
                 </div>
@@ -123,7 +163,7 @@
                     <div class="flex flex-col sm:flex-row items-center sm:space-x-4 mt-4 space-y-2 sm:space-y-0">
                         <input type="text" id="ee-desc" placeholder="Description (e.g., Harbour fee)" class="p-2 border border-gray-300 rounded-lg flex-grow w-full">
                         <input type="number" id="ee-amount" placeholder="Amount (LKR)" class="p-2 border border-gray-300 rounded-lg w-full sm:w-32" min="0">
-                        <button onclick="report.addEntry('extraExpenses', 'ee-desc', 'ee-amount')" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
+                        <button onclick="report.addEntry('extraExpenses', 'ee-desc', 'ee-amount')" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
                     </div>
                     <div class="total-box mt-4">Total Extra Expenses: <span id="ee-total">0.00 LKR</span></div>
                 </div>
@@ -156,7 +196,7 @@
                     <div class="flex flex-col sm:flex-row items-center sm:space-x-4 mt-2 space-y-2 sm:space-y-0">
                         <input type="text" id="cbv-desc" placeholder="Description (e.g., New Net)" class="p-2 border border-gray-300 rounded-lg flex-grow w-full">
                         <input type="number" id="cbv-amount" placeholder="Amount (LKR)" class="p-2 border border-gray-300 rounded-lg w-full sm:w-32" min="0">
-                        <button onclick="report.addEntry('currentBoatValues', 'cbv-desc', 'cbv-amount')" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
+                        <button onclick="report.addEntry('currentBoatValues', 'cbv-desc', 'cbv-amount')" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
                     </div>
                     <div class="total-box mt-2">Total Boat Value: <span id="cbv-total">0.00 LKR</span></div>
                 </div>
@@ -166,7 +206,7 @@
                     <div class="flex flex-col sm:flex-row items-center sm:space-x-4 mt-2 space-y-2 sm:space-y-0">
                         <input type="text" id="br-desc" placeholder="Description (e.g., Engine Fix)" class="p-2 border border-gray-300 rounded-lg flex-grow w-full">
                         <input type="number" id="br-amount" placeholder="Amount (LKR)" class="p-2 border border-gray-300 rounded-lg w-full sm:w-32" min="0">
-                        <button onclick="report.addEntry('boatRepairs', 'br-desc', 'br-amount')" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
+                        <button onclick="report.addEntry('boatRepairs', 'br-desc', 'br-amount')" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
                     </div>
                     <div class="total-box mt-2">Total Repairs: <span id="br-total">0.00 LKR</span></div>
                 </div>
@@ -182,7 +222,7 @@
                     <div class="flex flex-col sm:flex-row items-center sm:space-x-4 mt-2 space-y-2 sm:space-y-0">
                         <input type="text" id="ls-desc" placeholder="Name/Description" class="p-2 border border-gray-300 rounded-lg flex-grow w-full">
                         <input type="number" id="ls-amount" placeholder="Amount (LKR)" class="p-2 border border-gray-300 rounded-lg w-full sm:w-32" min="0">
-                        <button onclick="report.addEntry('loansSettled', 'ls-desc', 'ls-amount')" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
+                        <button onclick="report.addEntry('loansSettled', 'ls-desc', 'ls-amount')" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
                     </div>
                     <div class="total-box mt-2">Total Loans Settled: <span id="ls-total">0.00 LKR</span></div>
                 </div>
@@ -192,7 +232,7 @@
                     <div class="flex flex-col sm:flex-row items-center sm:space-x-4 mt-2 space-y-2 sm:space-y-0">
                         <input type="text" id="pl-desc" placeholder="Name/Description" class="p-2 border border-gray-300 rounded-lg flex-grow w-full">
                         <input type="number" id="pl-amount" placeholder="Amount (LKR)" class="p-2 border border-gray-300 rounded-lg w-full sm:w-32" min="0">
-                        <button onclick="report.addEntry('pendingLoans', 'pl-desc', 'pl-amount')" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
+                        <button onclick="report.addEntry('pendingLoans', 'pl-desc', 'pl-amount')" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
                     </div>
                     <div class="total-box mt-2">Total Pending Loans: <span id="pl-total">0.00 LKR</span></div>
                 </div>
@@ -206,7 +246,7 @@
                 <div class="flex flex-col sm:flex-row items-center sm:space-x-4 mt-4 space-y-2 sm:space-y-0">
                     <input type="text" id="sal-desc" placeholder="Name/Description" class="p-2 border border-gray-300 rounded-lg flex-grow w-full">
                     <input type="number" id="sal-amount" placeholder="Amount (LKR)" class="p-2 border border-gray-300 rounded-lg w-full sm:w-32" min="0">
-                    <button onclick="report.addEntry('salaries', 'sal-desc', 'sal-amount')" class="w-full sm:w-auto bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
+                    <button onclick="report.addEntry('salaries', 'sal-desc', 'sal-amount')" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add</button>
                 </div>
                 <div class="total-box mt-4">Total Salaries/Wages Paid: <span id="sal-total">0.00 LKR</span></div>
             </div>
@@ -244,21 +284,49 @@
 
                 <div id="profit-flow" class="space-y-3 text-base md:text-lg">
                     <div class="flex justify-between border-b pb-1"><span class="font-medium">Net Sales</span><span id="p-net-sales" class="font-bold text-indigo-700">0.00 LKR</span></div>
-                    <div class="flex justify-between border-t pt-2 border-gray-200"><span class="font-medium">- 5% Market Commission</span><span id="p-market-commission" class="text-red-600">0.00 LKR</span></div>
+                    
+                    <!-- Editable Market Commission -->
+                    <div class="flex justify-between items-center border-t pt-2 border-gray-200">
+                        <label for="market-commission-rate" class="font-medium flex-shrink-0">- Market Commission (%)</label>
+                        <input type="number" id="market-commission-rate" value="5" oninput="report.updateMarketCommission(this.value)"
+                               class="p-1 border border-gray-300 rounded-lg w-20 text-right mx-2">
+                        <span id="p-market-commission" class="text-red-600 font-medium">0.00 LKR</span>
+                    </div>
+
                     <div class="flex justify-between total-box bg-gray-50 border-gray-400"><span class="font-medium">Balance (After Market Commission)</span><span id="p-balance-1" class="font-extrabold text-gray-800">0.00 LKR</span></div>
                     <div class="flex justify-between border-t pt-2 border-gray-200"><span class="font-medium">- Deductible Boat-Loaded Expenses</span><span id="p-deductible-expenses" class="text-red-600">0.00 LKR</span></div>
-                    <div class="flex justify-between total-box bg-green-50 border-green-600"><span class="font-medium">Balance (After Expenses)</span><span id="p-balance-2" class="font-extrabold text-green-700">0.00 LKR</span></div>
+                    <!-- Balance 2 color changed to blue -->
+                    <div class="flex justify-between total-box bg-blue-50 border-blue-600"><span class="font-medium">Balance (After Expenses)</span><span id="p-balance-2" class="font-extrabold text-blue-700">0.00 LKR</span></div>
                     <div class="flex justify-between border-t pt-2 border-gray-200"><span class="font-medium">- 5% Skipper Commission (on Balance 2)</span><span id="p-skeeper-commission" class="text-red-600">0.00 LKR</span></div>
                     <div class="flex justify-between total-box bg-yellow-100 border-yellow-600 text-xl md:text-2xl"><span class="font-bold">Final Distributable Balance</span><span id="p-final-balance" class="font-extrabold text-yellow-800">0.00 LKR</span></div>
                     <div class="h-4"></div>
-                    <div class="flex justify-between border-t pt-4 border-gray-400"><span class="font-bold text-gray-700">Owner's Profit (50% of Final Balance)</span><span id="p-owner-profit" class="font-extrabold text-blue-700">0.00 LKR</span></div>
+                    <div class="flex justify-between border-t pt-4 border-gray-400"><span class="font-bold text-gray-700">Owner's Share (50% of Final Balance)</span><span id="p-owner-profit" class="font-extrabold text-blue-700">0.00 LKR</span></div>
+                
+                    <!-- Conditional Net Profit/Loss Display -->
+                    <div class="border-t pt-4 mt-4 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium text-gray-600">Show Net Owner's Profit/Loss</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="net-profit-toggle" onchange="report.toggleNetProfit(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div id="net-owner-profit-view" class="hidden">
+                            <p class="text-sm text-gray-500 italic mb-2">Calculated as: (Owner's Share) - (Boat Value Investments) - (Boat Repairs) - (Loans Settled) - (Salaries)</p>
+                            <div class="total-box bg-gray-100 border-gray-500 text-lg">
+                                <span class="font-bold">Net Owner's Profit/Loss:</span>
+                                <!-- Net owner profit color logic is handled in JS (will be blue or red) -->
+                                <span id="net-owner-profit-display" class="font-extrabold">0.00 LKR</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Crew Member's Salary Distribution (50% Remaining)</h3>
                 <div id="crew-distribution" class="space-y-2"></div>
                 <div class="flex flex-col sm:flex-row items-center sm:space-x-4 mt-4 space-y-2 sm:space-y-0">
                     <input type="text" id="crew-name" placeholder="Crew Member Name" class="p-2 border border-gray-300 rounded-lg flex-grow w-full">
-                    <button onclick="report.addCrewMember()" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add Crew Member</button>
+                    <button onclick="report.addCrewMember()" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300">Add Crew Member</button>
                 </div>
                 <div class="total-box mt-4">Total Crew Share: <span id="p-crew-total">0.00 LKR</span></div>
             </div>
@@ -273,10 +341,10 @@
 
         </div> <!-- End of interactive-content -->
         
-        <!-- Download PDF Button new location -->
+        <!-- Download PDF Button new location (color changed to blue) -->
         <div class="p-4 bg-white rounded-xl shadow-lg">
-             <button onclick="generatePDF()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-300 text-lg">
-                Download PDF
+             <button onclick="report.showPdfSummaryModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-300 text-lg">
+                Generate & Download PDF
             </button>
         </div>
         
@@ -287,89 +355,164 @@
       HIDDEN PDF TEMPLATE
       This section is not visible to the user. It is styled specifically
       for html2canvas to capture and format into an A4 PDF.
+      
+      *** THIS SECTION HAS BEEN REFORMATTED TO USE TABLES ***
       ==================================================================
     -->
     <div id="pdf-template">
         <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">ARRIVAL REPORT</h1>
-            <p class="text-lg text-gray-600">Date: <span id="pdf-date"></span></p>
+            <h1 id="pdf-report-title" class="text-3xl font-bold text-gray-800">ARRIVAL REPORT</h1>
+            <p id="pdf-board-date" class="text-lg text-gray-600">Board: N/A | Date: N/A</p>
         </div>
         <div class="pdf-header">Summary of Financial Activity (LKR)</div>
 
-        <!-- REVENUE SECTION -->
+        <!-- REVENUE SECTION (Table Layout) -->
         <div class="pdf-section">
             <h2 class="text-xl font-bold mb-2">Net Sales (Revenue)</h2>
-            <div id="pdf-sales-breakdown"></div>
-            <div class="pdf-item pdf-total mt-2">
-                <span>Total Net Sales</span>
-                <span id="pdf-net-sales-total">0.00 LKR</span>
-            </div>
+            <table class="min-w-full" style="font-size: 14px;">
+                <tbody id="pdf-sales-breakdown">
+                    <!-- JS renders sales rows here -->
+                </tbody>
+                <tfoot class="font-bold border-t-2 border-gray-400">
+                    <tr class="bg-gray-100">
+                        <td class="py-2 px-1">Total Net Sales</td>
+                        <td class="text-right py-2 px-1" id="pdf-net-sales-total">0.00 LKR</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
 
-        <!-- EXPENSES SECTION -->
+        <!-- EXPENSES SECTION (Table Layout) -->
         <div class="pdf-section">
             <h2 class="text-xl font-bold mt-4 mb-2">Expenditure</h2>
-            <div class="pdf-item font-bold mt-2"><span>Boat Departure Expenditure</span><span></span></div>
-            <div id="pdf-blc-breakdown"></div>
-            <div id="pdf-ee-breakdown"></div>
-            <div id="pdf-diesel-breakdown"></div>
-            <div class="pdf-item pdf-total mt-2">
-                <span>Total Deductible Expenses</span>
-                <span id="pdf-total-deductible-expenses">0.00 LKR</span>
-            </div>
-
-            <div class="pdf-item font-bold mt-4"><span>Other Expenditure</span><span></span></div>
-            <div id="pdf-salaries-breakdown"></div>
-            <div class="pdf-item pdf-total mt-2">
-                <span>Total Salaries/Wages Paid</span>
-                <span id="pdf-salaries-total">0.00 LKR</span>
-            </div>
+            <table class="min-w-full" style="font-size: 14px;">
+                <thead>
+                    <tr><th colspan="2" class="text-left font-bold py-1">Boat Departure Expenditure</th></tr>
+                </thead>
+                <tbody id="pdf-blc-breakdown">
+                    <!-- JS renders blc rows here -->
+                </tbody>
+                <tbody id="pdf-ee-breakdown">
+                    <!-- JS renders ee rows here -->
+                </tbody>
+                <tbody id="pdf-diesel-breakdown">
+                    <!-- JS renders diesel row here -->
+                </tbody>
+                <tfoot class="font-bold border-t border-gray-400">
+                    <tr class="bg-gray-100">
+                        <td class="py-2 px-1">Total Deductible Expenses</td>
+                        <td class="text-right py-2 px-1" id="pdf-total-deductible-expenses">0.00 LKR</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <table class="min-w-full mt-4" style="font-size: 14px;">
+                <thead>
+                    <tr><th colspan="2" class="text-left font-bold py-1">Other Expenditure</th></tr>
+                </thead>
+                <tbody id="pdf-salaries-breakdown">
+                    <!-- JS renders salaries rows here -->
+                </tbody>
+                <tfoot class="font-bold border-t border-gray-400">
+                    <tr class="bg-gray-100">
+                        <td class="py-2 px-1">Total Salaries/Wages Paid</td>
+                        <td class="text-right py-2 px-1" id="pdf-salaries-total">0.00 LKR</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
 
-        <!-- LOANS SECTION -->
+        <!-- LIABILITIES SECTION (Table Layout) -->
         <div class="pdf-section">
-            <h2 class="text-xl font-bold mt-4 mb-2">Liabilities & Capital</h2>
-            <div class="pdf-item font-bold mt-2"><span>Loans Settled</span><span></span></div>
-            <div id="pdf-loans-settled-breakdown"></div>
-            <div class="pdf-item font-bold mt-2"><span>Pending Loans (Due)</span><span></span></div>
-            <div id="pdf-pending-loans-breakdown"></div>
+            <h2 class="text-xl font-bold mt-4 mb-2">Liabilities</h2>
+            <table class="min-w-full" style="font-size: 14px;">
+                <thead>
+                    <tr><th colspan="2" class="text-left font-bold py-1">Loans Settled</th></tr>
+                </thead>
+                <tbody id="pdf-loans-settled-breakdown">
+                    <!-- JS renders loans settled rows here -->
+                </tbody>
+            </table>
+            <table class="min-w-full mt-4" style="font-size: 14px;">
+                <thead>
+                    <tr><th colspan="2" class="text-left font-bold py-1">Pending Loans (Due)</th></tr>
+                </thead>
+                <tbody id="pdf-pending-loans-breakdown">
+                    <!-- JS renders pending loans rows here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- BOAT VALUE & REPAIRS SECTION (Table Layout) -->
+        <div class="pdf-section">
+            <h2 class="text-xl font-bold mt-4 mb-2">Boat Value & Repairs</h2>
+            <table class="min-w-full" style="font-size: 14px;">
+                <thead>
+                    <tr><th colspan="2" class="text-left font-bold py-1">Boat Value (Investments)</th></tr>
+                </thead>
+                <tbody id="pdf-boat-value-breakdown">
+                    <!-- JS renders boat value rows here -->
+                </tbody>
+            </table>
+            <table class="min-w-full mt-4" style="font-size: 14px;">
+                <thead>
+                    <tr><th colspan="2" class="text-left font-bold py-1">Boat Repairs</th></tr>
+                </thead>
+                <tbody id="pdf-repairs-breakdown">
+                    <!-- JS renders repairs rows here -->
+                </tbody>
+                <tfoot class="font-bold border-t border-gray-400">
+                    <tr class="bg-gray-100">
+                        <td class="py-2 px-1">Total Value/Repairs</td>
+                        <td class="text-right py-2 px-1" id="pdf-value-repair-total">0.00 LKR</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
         
-        <!-- SUMMARY / PROFIT FLOW -->
+        <!-- SUMMARY / PROFIT FLOW (Already a table, no changes) -->
         <div class="pdf-header mt-8">Profit & Loss Distribution</div>
         <div class="pdf-section">
-            <!-- Use a table for better alignment in the PDF -->
             <table class="min-w-full" style="font-size: 14px;">
-                <tr><td class="font-medium py-1">Net Sales</td><td class="text-right py-1" id="s-net-sales-pdf">0.00 LKR</td></tr>
-                <tr><td class="font-medium text-red-600 py-1">- 5% Market Commission</td><td class="text-right text-red-600 py-1" id="s-market-commission-pdf">0.00 LKR</td></tr>
-                <tr class="font-bold"><td class="border-t pt-1 py-1">Balance 1</td><td class="border-t pt-1 text-right py-1" id="s-balance1-pdf">0.00 LKR</td></tr>
-                <tr><td class="font-medium text-red-600 py-1">- Deductible Departure Expenses</td><td class="text-right text-red-600 py-1" id="s-deductible-expenses-pdf">0.00 LKR</td></tr>
-                <tr class="font-bold"><td class="border-t pt-1 py-1">Balance 2</td><td class="border-t pt-1 text-right py-1" id="s-balance2-pdf">0.00 LKR</td></tr>
-                <tr><td class="font-medium text-red-600 py-1">- 5% Skipper Commission</td><td class="text-right text-red-600 py-1" id="s-skeeper-commission-pdf">0.00 LKR</td></tr>
-                <tr class="font-extrabold text-lg"><td class="border-t-2 pt-2 py-1">Final Balance</td><td class="border-t-2 pt-2 text-right py-1" id="s-final-balance-pdf">0.00 LKR</td></tr>
-                <tr class="font-extrabold text-blue-700 text-lg"><td class="border-t-2 pt-2 py-1">Owner's Profit (50%)</td><td class="border-t-2 pt-2 text-right py-1" id="s-owner-profit-pdf">0.00 LKR</td></tr>
+                <tr class="bg-white"><td class="font-medium py-2 px-1">Net Sales</td><td class="text-right py-2 px-1" id="s-net-sales-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-50"><td class="font-medium text-red-600 py-2 px-1">- Market Commission (<span id="s-market-comm-rate-pdf">5</span>%)</td><td class="text-right text-red-600 py-2 px-1" id="s-market-commission-pdf">0.00 LKR</td></tr>
+                <tr class="font-bold bg-white"><td class="border-t pt-1 py-2 px-1">Balance 1</td><td class="border-t pt-1 text-right py-2 px-1" id="s-balance1-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-50"><td class="font-medium text-red-600 py-2 px-1">- Deductible Departure Expenses</td><td class="text-right text-red-600 py-2 px-1" id="s-deductible-expenses-pdf">0.00 LKR</td></tr>
+                <tr class="font-bold bg-white"><td class="border-t pt-1 py-2 px-1">Balance 2</td><td class="border-t pt-1 text-right py-2 px-1" id="s-balance2-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-50"><td class="font-medium text-red-600 py-2 px-1">- 5% Skipper Commission</td><td class="text-right text-red-600 py-2 px-1" id="s-skeeper-commission-pdf">0.00 LKR</td></tr>
+                <tr class="font-extrabold text-lg bg-white"><td class="border-t-2 pt-2 py-2 px-1">Final Balance</td><td class="border-t-2 pt-2 text-right py-2 px-1" id="s-final-balance-pdf">0.00 LKR</td></tr>
+                <tr class="font-extrabold text-blue-700 text-lg bg-gray-50"><td class="border-t-2 pt-2 py-2 px-1">Owner's Share (50%)</td><td class="border-t-2 pt-2 text-right py-2 px-1" id="s-owner-profit-pdf">0.00 LKR</td></tr>
             </table>
 
+            <!-- Crew Distribution (Table Layout) -->
             <h3 class="text-lg font-bold mt-4">Crew Salary Distribution (50% Remaining)</h3>
-            <div id="pdf-crew-breakdown"></div>
-            <div class="pdf-item pdf-total mt-2">
-                <span>Total Crew Share</span>
-                <span id="s-crew-total-pdf">0.00 LKR</span>
-            </div>
+            <table class="min-w-full" style="font-size: 14px;">
+                <tbody id="pdf-crew-breakdown">
+                    <!-- JS renders crew rows here -->
+                </tbody>
+                <tfoot class="font-bold border-t border-gray-400">
+                    <tr class="bg-gray-100">
+                        <td class="py-2 px-1">Total Crew Share</td>
+                        <td class="text-right py-2 px-1" id="s-crew-total-pdf">0.00 LKR</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
 
-        <!-- FINAL SUMMARY TABLE -->
+        <!-- FINAL SUMMARY TABLE (Already a table, no changes) -->
         <div class="pdf-header mt-8">Final Summary (Profit/Loss Metrics)</div>
         <table class="min-w-full text-base" style="font-size: 14px;">
             <tbody class="divide-y divide-gray-200">
-                <tr><td class="px-4 py-2 font-bold">Net Sales</td><td class="px-4 py-2 text-right" id="sum-net-sales-pdf">0.00 LKR</td></tr>
-                <tr><td class="px-4 py-2 font-bold">Boat Departure Expenditure</td><td class="px-4 py-2 text-right" id="sum-departure-expenditure-pdf">0.00 LKR</td></tr>
-                <tr><td class="px-4 py-2 font-bold">Fuel Consumption</td><td class="px-4 py-2 text-right" id="sum-fuel-consumption-pdf">0.00 LKR</td></tr>
-                <tr><td class="px-4 py-2 font-bold">Current Boat Value (Investment)</td><td class="px-4 py-2 text-right" id="sum-current-boat-value-pdf">0.00 LKR</td></tr>
-                <tr><td class="px-4 py-2 font-bold">Settled Loans</td><td class="px-4 py-2 text-right" id="sum-settled-loans-pdf">0.00 LKR</td></tr>
-                <tr><td class="px-4 py-2 font-bold">Due Loans (Pending)</td><td class="px-4 py-2 text-right" id="sum-due-loans-pdf">0.00 LKR</td></tr>
-                <tr><td class="px-4 py-2 font-bold">Salary / Wages</td><td class="px-4 py-2 text-right" id="sum-salary-wages-pdf">0.00 LKR</td></tr>
-                <tr class="bg-blue-100 font-bold"><td class="px-4 py-2">Current Profit / Loss (Owner's Profit)</td><td class="px-4 py-2 text-right text-lg text-blue-700" id="sum-profit-loss-pdf">0.00 LKR</td></tr>
+                <tr class="bg-white"><td class="px-2 py-2 font-bold">Net Sales</td><td class="px-2 py-2 text-right" id="sum-net-sales-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-50"><td class="px-2 py-2 font-bold">Boat Departure Expenditure</td><td class="px-2 py-2 text-right" id="sum-departure-expenditure-pdf">0.00 LKR</td></tr>
+                <tr class="bg-white"><td class="px-2 py-2 font-bold">Fuel Consumption</td><td class="px-2 py-2 text-right" id="sum-fuel-consumption-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-50"><td class="px-2 py-2 font-bold">Current Boat Value (Investment)</td><td class="px-2 py-2 text-right" id="sum-current-boat-value-pdf">0.00 LKR</td></tr>
+                <tr class="bg-white"><td class="px-2 py-2 font-bold">Boat Repairs</td><td class="px-2 py-2 text-right" id="sum-boat-repairs-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-50"><td class="px-2 py-2 font-bold">Settled Loans</td><td class="px-2 py-2 text-right" id="sum-settled-loans-pdf">0.00 LKR</td></tr>
+                <tr class="bg-white"><td class="px-2 py-2 font-bold">Due Loans (Pending)</td><td class="px-2 py-2 text-right" id="sum-due-loans-pdf">0.00 LKR</td></tr>
+                <tr class="bg-gray-50"><td class="px-2 py-2 font-bold">Salary / Wages</td><td class="px-2 py-2 text-right" id="sum-salary-wages-pdf">0.00 LKR</td></tr>
+                <tr class="bg-blue-100 font-bold"><td class="px-2 py-2">Owner's Share (50% Split)</td><td class="px-2 py-2 text-right text-lg text-blue-700" id="sum-profit-loss-pdf">0.00 LKR</td></tr>
+                <!-- Net Profit Row (color logic in JS) -->
+                <tr class="bg-gray-200 font-bold"><td class="px-2 py-2">FINAL NET OWNER PROFIT/LOSS</td><td class="px-2 py-2 text-right text-lg" id="sum-net-owner-profit-pdf">0.00 LKR</td></tr>
             </tbody>
         </table>
 
@@ -393,6 +536,34 @@
         </div>
     </div>
     <!-- End Custom Modal -->
+
+    <!-- NEW: PDF Summary Modal (Confirm button color changed) -->
+    <div id="pdf-summary-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md m-4">
+            <h2 class="text-2xl font-bold mb-4">PDF Download Summary</h2>
+            <p class="mb-4">Review the key data below. You can add a custom title for the PDF.</p>
+            
+            <div class="mb-4">
+                <label for="pdf-title-input" class="block text-sm font-medium text-gray-700">Custom PDF Title (Optional)</label>
+                <input type="text" id="pdf-title-input" placeholder="e.g., Trip 10 Final Report"
+                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border">
+            </div>
+
+            <div class="space-y-2 border-t border-b py-4 my-4">
+                <div class="flex justify-between text-lg"><span class="font-medium text-gray-600">Total Net Sales:</span><span id="pdf-summary-sales" class="font-bold">0.00 LKR</span></div>
+                <div class="flex justify-between text-lg"><span class="font-medium text-gray-600">Total All Expenses:</span><span id="pdf-summary-expenses" class="font-bold text-red-600">0.00 LKR</span></div>
+                <div class="flex justify-between text-lg"><span class="font-medium text-gray-600">Owner's Share (50%):</span><span id="pdf-summary-owner-share" class="font-bold text-blue-600">0.00 LKR</span></div>
+                <div class="flex justify-between text-xl"><span class="font-bold text-gray-800">Net Owner's Profit/Loss:</span><span id="pdf-summary-net-profit" class="font-extrabold">0.00 LKR</span></div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button onclick="report.hidePdfSummaryModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg">Cancel</button>
+                <button onclick="generatePDF()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg">Confirm & Download</button>
+            </div>
+        </div>
+    </div>
+    <!-- End PDF Summary Modal -->
+
 
     <!-- Firebase Imports and Main Script Logic -->
     <script>
@@ -440,6 +611,8 @@
             constructor() {
                 this.defaultData = {
                     date: new Date().toISOString().substring(0, 10),
+                    boardName: '',
+                    marketCommissionRate: 5, // New field, default 5%
                     boatLoadedCosts: [],
                     extraExpenses: [],
                     diesel: { liters: 0, pricePerLiter: 277, totalCost: 0 },
@@ -461,6 +634,8 @@
             // Initialize UI fields with current data
             init() {
                 document.getElementById('arrival-date').value = this.data.date;
+                document.getElementById('board-name').value = this.data.boardName;
+                document.getElementById('market-commission-rate').value = this.data.marketCommissionRate;
                 document.getElementById('diesel-liters').value = this.data.diesel.liters;
                 document.getElementById('report-note').value = this.data.note;
             }
@@ -473,7 +648,7 @@
                     if (storedData) {
                         const loadedData = JSON.parse(storedData);
                         // Merge loaded data with defaults to ensure all keys exist
-                        this.data = { ...this.defaultData, ...loadedData };
+                        this.data = { ...JSON.parse(JSON.stringify(this.defaultData)), ...loadedData };
                         this.init(); // Re-initialize UI fields with loaded data
                         console.log("Report loaded from localStorage.");
                     } else {
@@ -493,15 +668,15 @@
                     console.log("Report saved to localStorage.");
                     const saveMsg = document.getElementById('save-message');
                     saveMsg.textContent = 'Report Saved!';
-                    saveMsg.classList.remove('text-red-600'); // Ensure it's green
-                    saveMsg.classList.add('text-green-600');
+                    saveMsg.classList.remove('text-red-600'); // Ensure it's blue
+                    saveMsg.classList.add('text-blue-600');
                     // Clear message after 3 seconds
                     setTimeout(() => { saveMsg.textContent = ''; }, 3000);
                 } catch (e) {
                     console.error("Error saving report to localStorage:", e);
                     const saveMsg = document.getElementById('save-message');
                     saveMsg.textContent = 'Save Failed!';
-                    saveMsg.classList.remove('text-green-600');
+                    saveMsg.classList.remove('text-blue-600');
                     saveMsg.classList.add('text-red-600');
                     showModal("Save Error", "Could not save data. Local storage might be full or disabled.", false);
                 }
@@ -614,10 +789,30 @@
                 this.data.date = dateString;
                 this.saveReport();
             }
+
+            updateBoardName(name) {
+                this.data.boardName = name;
+                this.saveReport();
+            }
+
+            updateMarketCommission(rate) {
+                this.data.marketCommissionRate = parseFloat(rate) || 0;
+                this.updateAll(); // Recalculate everything
+                this.saveReport();
+            }
             
             updateNote(noteValue) {
                 this.data.note = noteValue;
                 this.saveReport(); // Auto-save on note change
+            }
+
+            toggleNetProfit(checkbox) {
+                const view = document.getElementById('net-owner-profit-view');
+                if (checkbox.checked) {
+                    view.classList.remove('hidden');
+                } else {
+                    view.classList.add('hidden');
+                }
             }
             
             // --- Calculation Logic ---
@@ -640,7 +835,7 @@
 
             calculateProfitFlow() {
                 const netSales = this.calculateNetSales();
-                const marketCommissionRate = 0.05;
+                const marketCommissionRate = (this.data.marketCommissionRate || 0) / 100;
                 const skeeperCommissionRate = 0.05;
 
                 const boatLoadedCostTotal = this.sumAmounts('boatLoadedCosts');
@@ -676,9 +871,17 @@
                     share: singleCrewShare
                 }));
 
+                // Calculate Net Owner's Profit/Loss
+                const cbvTotal = this.sumAmounts('currentBoatValues');
+                const brTotal = this.sumAmounts('boatRepairs');
+                const lsTotal = this.sumAmounts('loansSettled');
+                const salTotal = this.sumAmounts('salaries');
+                const netOwnerProfit = ownersProfit - cbvTotal - brTotal - lsTotal - salTotal;
+
                 return {
                     netSales, marketCommission, balance1, deductibleExpenses, balance2,
-                    skeeperCommission, finalBalance, ownersProfit, crewShareTotal
+                    skeeperCommission, finalBalance, ownersProfit, crewShareTotal,
+                    netOwnerProfit // Return the new value
                 };
             }
 
@@ -741,7 +944,8 @@
                 container.innerHTML = this.data.crew.map((item, index) => `
                     <div class="flex justify-between items-center border-b pb-1">
                         <span class="text-gray-600 flex-grow">${item.name} (1 of ${this.data.crew.length})</span>
-                        <span class="font-bold text-teal-700">${this.formatLKR(item.share)}</span>
+                        <!-- Crew share color changed to blue -->
+                        <span class="font-bold text-blue-700">${this.formatLKR(item.share)}</span>
                         <button onclick="report.removeCrewMember(${index})" class="ml-4 text-red-500 hover:text-red-700 text-xs px-2">Remove</button>
                     </div>
                 `).join('');
@@ -800,39 +1004,97 @@
                 document.getElementById('p-owner-profit').textContent = this.formatLKR(profit.ownersProfit);
                 document.getElementById('p-crew-total').textContent = this.formatLKR(profit.crewShareTotal);
 
+                // Update Net Owner Profit display (color changed to blue for profit)
+                const netProfitDisplay = document.getElementById('net-owner-profit-display');
+                netProfitDisplay.textContent = this.formatLKR(profit.netOwnerProfit);
+                if (profit.netOwnerProfit >= 0) {
+                    netProfitDisplay.classList.remove('text-red-600');
+                    netProfitDisplay.classList.add('text-blue-600');
+                } else {
+                    netProfitDisplay.classList.remove('text-blue-600');
+                    netProfitDisplay.classList.add('text-red-600');
+                }
+
                 // Re-render crew distribution *after* profit calc to show correct shares
                 this.renderCrewDistribution();
+            }
+
+            // --- PDF Modal Logic ---
+            showPdfSummaryModal() {
+                const profit = this.calculateProfitFlow();
+                const blcTotal = this.sumAmounts('boatLoadedCosts');
+                const eeTotal = this.sumAmounts('extraExpenses');
+                const cbvTotal = this.sumAmounts('currentBoatValues');
+                const brTotal = this.sumAmounts('boatRepairs');
+                const lsTotal = this.sumAmounts('loansSettled');
+                const salTotal = this.sumAmounts('salaries');
+                const fuelCost = this.data.diesel.totalCost;
+
+                const totalExpenses = blcTotal + eeTotal + fuelCost + cbvTotal + brTotal + lsTotal + salTotal;
+                
+                document.getElementById('pdf-summary-sales').textContent = this.formatLKR(profit.netSales);
+                document.getElementById('pdf-summary-expenses').textContent = `-${this.formatLKR(totalExpenses)}`;
+                document.getElementById('pdf-summary-owner-share').textContent = this.formatLKR(profit.ownersProfit);
+                document.getElementById('pdf-summary-net-profit').textContent = this.formatLKR(profit.netOwnerProfit);
+
+                // Style Net Profit in modal (color changed to blue for profit)
+                const netProfitModalDisplay = document.getElementById('pdf-summary-net-profit');
+                if (profit.netOwnerProfit >= 0) {
+                    netProfitModalDisplay.classList.remove('text-red-600');
+                    netProfitModalDisplay.classList.add('text-blue-600');
+                } else {
+                    netProfitModalDisplay.classList.remove('text-blue-600');
+                    netProfitModalDisplay.classList.add('text-red-600');
+                }
+
+                document.getElementById('pdf-summary-modal').classList.remove('hidden');
+                document.getElementById('pdf-summary-modal').classList.add('flex');
+            }
+
+            hidePdfSummaryModal() {
+                document.getElementById('pdf-summary-modal').classList.add('hidden');
+                document.getElementById('pdf-summary-modal').classList.remove('flex');
             }
         }
 
         // --- PDF Generation Function ---
 
         // Renders a simple {desc, amount} list for the PDF
+        // *** UPDATED TO RENDER TABLE ROWS (TR) ***
         function renderPdfSection(key, elementId) {
             const container = document.getElementById(elementId);
-            container.innerHTML = report.data[key].map(item => `
-                <div class="pdf-item">
-                    <span>${item.desc}</span>
-                    <span>${report.formatLKR(item.amount)}</span>
-                </div>
-            `).join('');
-            if (report.data[key].length === 0) {
-                container.innerHTML = `<div class="pdf-item italic text-gray-500"><span>No entries</span><span></span></div>`;
+            const entries = report.data[key];
+            if (entries.length === 0) {
+                container.innerHTML = `<tr><td colspan="2" class="py-1 italic text-gray-500">No entries</td></tr>`;
+                return;
             }
+            container.innerHTML = entries.map((item, index) => `
+                <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                    <td class="py-2 px-1">${item.desc}</td>
+                    <td class="text-right py-2 px-1">${report.formatLKR(item.amount)}</td>
+                </tr>
+            `).join('');
         }
 
         // Fills the hidden #pdf-template with all current data
+        // *** UPDATED TO POPULATE TABLE ROWS (TR) ***
         function populatePdfTemplate(profit, blcTotal, eeTotal, cbvTotal, brTotal, lsTotal, plTotal, salTotal) {
+            const customTitle = document.getElementById('pdf-title-input').value.trim();
+            
             // Header
-            document.getElementById('pdf-date').textContent = report.data.date;
+            document.getElementById('pdf-report-title').textContent = customTitle || 'ARRIVAL REPORT';
+            document.getElementById('pdf-board-date').textContent = `Board: ${report.data.boardName || 'N/A'} | Date: ${report.data.date}`;
             
             // Sales Breakdown
-            document.getElementById('pdf-sales-breakdown').innerHTML = report.data.sales.map(s => `
-                <div class="pdf-item">
-                    <span>${s.category} (${s.weight.toFixed(2)} Kg @ ${s.priceKg.toFixed(2)}/Kg)</span>
-                    <span>${report.formatLKR(s.total)}</span>
-                </div>
+            document.getElementById('pdf-sales-breakdown').innerHTML = report.data.sales.map((s, index) => `
+                <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                    <td class="py-2 px-1">${s.category} (${s.weight.toFixed(2)} Kg @ ${s.priceKg.toFixed(2)}/Kg)</td>
+                    <td class="text-right py-2 px-1">${report.formatLKR(s.total)}</td>
+                </tr>
             `).join('');
+            if(report.data.sales.length === 0) {
+                 document.getElementById('pdf-sales-breakdown').innerHTML = `<tr><td colspan="2" class="py-1 italic text-gray-500">No sales entries</td></tr>`;
+            }
             document.getElementById('pdf-net-sales-total').textContent = report.formatLKR(profit.netSales);
 
             // Expenses Breakdown
@@ -840,10 +1102,10 @@
             renderPdfSection('extraExpenses', 'pdf-ee-breakdown');
             
             document.getElementById('pdf-diesel-breakdown').innerHTML = `
-                <div class="pdf-item">
-                    <span>Fuel Consumption (${report.data.diesel.liters.toFixed(2)} Liters)</span>
-                    <span>${report.formatLKR(report.data.diesel.totalCost)}</span>
-                </div>
+                <tr class="bg-white">
+                    <td class="py-2 px-1">Fuel Consumption (${report.data.diesel.liters.toFixed(2)} Liters)</td>
+                    <td class="text-right py-2 px-1">${report.formatLKR(report.data.diesel.totalCost)}</td>
+                </tr>
             `;
             document.getElementById('pdf-total-deductible-expenses').textContent = report.formatLKR(profit.deductibleExpenses);
 
@@ -855,8 +1117,15 @@
             renderPdfSection('loansSettled', 'pdf-loans-settled-breakdown');
             renderPdfSection('pendingLoans', 'pdf-pending-loans-breakdown');
             
+            // New: Boat Value & Repairs
+            renderPdfSection('currentBoatValues', 'pdf-boat-value-breakdown');
+            renderPdfSection('boatRepairs', 'pdf-repairs-breakdown');
+            document.getElementById('pdf-value-repair-total').textContent = report.formatLKR(cbvTotal + brTotal);
+
+
             // Profit Flow
             document.getElementById('s-net-sales-pdf').textContent = report.formatLKR(profit.netSales);
+            document.getElementById('s-market-comm-rate-pdf').textContent = report.data.marketCommissionRate;
             document.getElementById('s-market-commission-pdf').textContent = `-${report.formatLKR(profit.marketCommission)}`;
             document.getElementById('s-balance1-pdf').textContent = report.formatLKR(profit.balance1);
             document.getElementById('s-deductible-expenses-pdf').textContent = `-${report.formatLKR(profit.deductibleExpenses)}`;
@@ -865,12 +1134,15 @@
             document.getElementById('s-final-balance-pdf').textContent = report.formatLKR(profit.finalBalance);
             document.getElementById('s-owner-profit-pdf').textContent = report.formatLKR(profit.ownersProfit);
             
-            document.getElementById('pdf-crew-breakdown').innerHTML = report.data.crew.map(c => `
-                <div class="pdf-item text-sm">
-                    <span>- ${c.name}</span>
-                    <span>${report.formatLKR(c.share)}</span>
-                </div>
+            document.getElementById('pdf-crew-breakdown').innerHTML = report.data.crew.map((c, index) => `
+                <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                    <td class="py-2 px-1 text-sm">- ${c.name}</td>
+                    <td class="text-right py-2 px-1 text-sm">${report.formatLKR(c.share)}</td>
+                </tr>
             `).join('');
+             if(report.data.crew.length === 0) {
+                 document.getElementById('pdf-crew-breakdown').innerHTML = `<tr><td colspan="2" class="py-1 italic text-gray-500">No crew members</td></tr>`;
+            }
             document.getElementById('s-crew-total-pdf').textContent = report.formatLKR(profit.crewShareTotal);
 
             // Final Summary Table
@@ -878,10 +1150,23 @@
             document.getElementById('sum-departure-expenditure-pdf').textContent = report.formatLKR(blcTotal + eeTotal);
             document.getElementById('sum-fuel-consumption-pdf').textContent = report.formatLKR(report.data.diesel.totalCost);
             document.getElementById('sum-current-boat-value-pdf').textContent = report.formatLKR(cbvTotal);
+            document.getElementById('sum-boat-repairs-pdf').textContent = report.formatLKR(brTotal);
             document.getElementById('sum-settled-loans-pdf').textContent = report.formatLKR(lsTotal);
             document.getElementById('sum-due-loans-pdf').textContent = report.formatLKR(plTotal);
             document.getElementById('sum-salary-wages-pdf').textContent = report.formatLKR(salTotal);
             document.getElementById('sum-profit-loss-pdf').textContent = report.formatLKR(profit.ownersProfit);
+            
+            // Net Owner Profit (color changed to blue for profit)
+            const netOwnerProfitPDF = document.getElementById('sum-net-owner-profit-pdf');
+            netOwnerProfitPDF.textContent = report.formatLKR(profit.netOwnerProfit);
+             if (profit.netOwnerProfit >= 0) {
+                netOwnerProfitPDF.classList.remove('text-red-600');
+                netOwnerProfitPDF.classList.add('text-blue-600');
+            } else {
+                netOwnerProfitPDF.classList.remove('text-blue-600');
+                netOwnerProfitPDF.classList.add('text-red-600');
+            }
+
 
             // Note
             document.getElementById('pdf-note-content').textContent = report.data.note || 'No notes recorded.';
@@ -889,9 +1174,14 @@
 
         // Main function to trigger PDF generation
         function generatePDF() {
+            // First, hide the modal
+            report.hidePdfSummaryModal();
+
             const element = document.getElementById('pdf-template');
             const date = report.data.date || 'report';
-            
+            const customTitle = document.getElementById('pdf-title-input').value.trim();
+            const fileName = `${customTitle.replace(/ /g, '_') || report.data.boardName.replace(/ /g, '_') || 'Arrival_Report'}_${date}.pdf`;
+
             // Recalculate everything and populate the hidden template before capture
             const blcTotal = report.sumAmounts('boatLoadedCosts');
             const eeTotal = report.sumAmounts('extraExpenses');
@@ -940,7 +1230,7 @@
                     heightLeft -= pageHeight;
                 }
 
-                pdf.save(`Arrival_Report_${date}.pdf`);
+                pdf.save(fileName);
             }).catch(error => {
                 element.style.display = 'none';
                 console.error('Error generating PDF:', error);
@@ -962,4 +1252,5 @@
         report.loadReport();
     </script>
 </body>
+
 </html>
