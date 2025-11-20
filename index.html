@@ -20,7 +20,7 @@
             border: 1px solid #e5e7eb;
         }
         
-        /* Brand Colors - UPDATED to #1e3c72 */
+        /* Brand Colors - #1e3c72 */
         .brand-bg { background-color: #1e3c72; }
         .brand-text { color: #1e3c72; }
         
@@ -72,7 +72,7 @@
         }
         .pdf-section { margin-bottom: 15px; width: 100%; page-break-inside: avoid; }
         .pdf-header-bar { 
-            background-color: #1e3c72; /* UPDATED */
+            background-color: #1e3c72; 
             color: white; padding: 8px 10px; 
             font-weight: bold; font-size: 12px; margin-bottom: 8px; text-transform: uppercase;
         }
@@ -118,7 +118,6 @@
                     Clear
                 </button>
             </div>
-            <!-- UPDATED: Green success message changed to Brand Color -->
             <span id="save-message" class="text-xs font-bold text-brand animate-pulse"></span>
         </div>
 
@@ -188,7 +187,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Price per Liter (LKR)</label>
-                        <input type="number" step="0.01" value="277.00" id="diesel-price" class="block w-full p-3 border border-gray-300 rounded-lg bg-gray-100 font-mono text-gray-600" readonly>
+                        <input type="number" step="0.01" value="277.00" id="diesel-price" oninput="report.calculateDiesel()" class="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono text-gray-700">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Liters Consumed</label>
@@ -242,7 +241,6 @@
                 </h2>
                 
                 <div class="mb-6">
-                    <!-- UPDATED: text-green-600 -> text-brand -->
                     <h3 class="text-sm font-bold text-brand uppercase tracking-wide mb-2">Loans Settled (Repaid)</h3>
                     <div id="loans-settled-entries" class="space-y-2 mb-3"></div>
                     <div class="flex flex-col md:flex-row gap-3">
@@ -252,7 +250,6 @@
                             <button onclick="report.addEntry('loansSettled', 'ls-desc', 'ls-amount')" class="btn-brand font-medium py-2 px-4 rounded-lg">Add</button>
                         </div>
                     </div>
-                    <!-- UPDATED: green styles to brand color -->
                     <div class="total-box mt-2 text-brand bg-blue-50 border-blue-900">
                         <span>Total Settled</span>
                         <span id="ls-total">0.00 LKR</span>
@@ -381,7 +378,6 @@
                         <span id="p-deductible-expenses" class="text-red-600 font-semibold">0.00 LKR</span>
                     </div>
 
-                    <!-- UPDATED: Green styles to Brand Color -->
                     <div class="total-box bg-blue-50 border-blue-900 text-brand">
                         <span>Balance 2 (Pre-Skipper)</span>
                         <span id="p-balance-2" class="font-extrabold">0.00 LKR</span>
@@ -427,10 +423,27 @@
                 </div>
             </div>
             
-            <!-- 9. Bank Summary -->
+            <!-- 09. Final Summary (New in UI to match PDF) -->
             <div class="section-card p-5 md:p-8">
                 <h2 class="text-lg font-bold brand-text mb-4 flex items-center">
                     <span class="bg-blue-100 text-brand text-xs px-2 py-1 rounded mr-2">09</span>
+                    Final Summary
+                </h2>
+                 <div class="space-y-3 text-base md:text-lg">
+                    <div class="flex justify-between"><span class="font-medium text-gray-600">Net Sales</span><span id="ui-sum-net-sales" class="font-bold">0.00 LKR</span></div>
+                    <div class="flex justify-between"><span class="font-medium text-gray-600">Total Deductible Expenses</span><span id="ui-sum-deductibles" class="font-bold">0.00 LKR</span></div>
+                    <div class="flex justify-between"><span class="font-medium text-gray-600">Total Loan Liability</span><span id="ui-sum-loans" class="font-bold">0.00 LKR</span></div>
+                    <div class="total-box mt-4 text-xl bg-blue-100 border-blue-900 text-brand">
+                        <span>FINAL BANK DEPOSIT</span>
+                        <span id="ui-sum-bank-deposited">0.00 LKR</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. Bank Summary (Moved) -->
+            <div class="section-card p-5 md:p-8">
+                <h2 class="text-lg font-bold brand-text mb-4 flex items-center">
+                    <span class="bg-blue-100 text-brand text-xs px-2 py-1 rounded mr-2">10</span>
                     Bank Deposited Summary
                 </h2>
                 <div class="space-y-3 text-base md:text-lg">
@@ -443,10 +456,13 @@
                     </div>
                 </div>
             </div>
-
-            <!-- 10. Notes -->
+            
+            <!-- 11. Notes (Moved to Bottom) -->
             <div class="section-card p-5 md:p-8">
-                <h2 class="text-lg font-bold brand-text mb-4">10. Notes</h2>
+                <h2 class="text-lg font-bold brand-text mb-4 flex items-center">
+                    <span class="bg-blue-100 text-brand text-xs px-2 py-1 rounded mr-2">11</span>
+                    Notes
+                </h2>
                 <textarea id="report-note" rows="4" oninput="report.updateNote(this.value)"
                           class="block w-full rounded-lg border-gray-300 shadow-sm p-3 border focus:ring-2 focus:ring-blue-200" placeholder="Any additional details..."></textarea>
             </div>
@@ -563,8 +579,20 @@
             </table>
         </div>
 
+        <!-- 9. Final Summary (Calculated Totals) -->
         <div class="pdf-section">
-            <div class="pdf-header-bar">9. BANK DEPOSITED SUMMARY</div>
+            <div class="pdf-header-bar">9. FINAL SUMMARY</div>
+            <table class="pdf-table">
+                <tr><td class="font-bold">Net Sales</td><td class="text-right" id="sum2-net-sales">0.00</td></tr>
+                <tr><td class="font-bold">Total Deductible Expenses</td><td class="text-right" id="sum2-deductible-expenses">0.00</td></tr>
+                <tr><td class="font-bold">Total Loan Liability</td><td class="text-right" id="sum2-loan-liability">0.00</td></tr>
+                <tr class="bg-blue-100"><td class="font-bold text-brand">FINAL BANK DEPOSIT</td><td class="text-right font-bold text-brand" id="sum2-bank-deposited">0.00</td></tr>
+            </table>
+        </div>
+
+        <!-- 10. Bank Summary (Moved to 10 in PDF) -->
+        <div class="pdf-section">
+            <div class="pdf-header-bar">10. BANK DEPOSITED SUMMARY</div>
             <table class="pdf-table">
                 <tr><td>Owner's Profit</td><td class="text-right" id="bd-owner-profit-pdf">0.00</td></tr>
                 <tr><td>+ Loans Settled</td><td class="text-right" id="bd-loans-settled-pdf">0.00</td></tr>
@@ -572,18 +600,12 @@
                 <tr class="pdf-total-row" style="font-size:12px; background-color:#e0e7ff; font-weight:bold;"><td>Total Deposited</td><td class="text-right" id="sum-bank-deposited-pdf">0.00</td></tr>
             </table>
         </div>
-
+        
+        <!-- 11. Notes (Moved to 11 in PDF) -->
         <div class="pdf-section">
-            <div class="pdf-header-bar">10. FINAL SUMMARY & NOTES</div>
-            <table class="pdf-table">
-                <tr><td class="font-bold">Net Sales</td><td class="text-right" id="sum2-net-sales">0.00</td></tr>
-                <tr><td class="font-bold">Total Deductible Expenses</td><td class="text-right" id="sum2-deductible-expenses">0.00</td></tr>
-                <tr><td class="font-bold">Total Loan Liability</td><td class="text-right" id="sum2-loan-liability">0.00</td></tr>
-                <tr class="bg-blue-100"><td class="font-bold text-brand">FINAL BANK DEPOSIT</td><td class="text-right font-bold text-brand" id="sum2-bank-deposited">0.00</td></tr>
-            </table>
-            <!-- UPDATED: Added style="white-space: pre-wrap;" for Note visibility -->
-            <div class="mt-4 border-t pt-2" style="white-space: pre-wrap; word-break: break-word;">
-                <strong>Note:</strong> <span id="pdf-note-content"></span>
+             <div class="pdf-header-bar">11. NOTES</div>
+             <div class="mt-2 p-2 border border-gray-200" style="white-space: pre-wrap; word-break: break-word; font-size: 11px;">
+                <span id="pdf-note-content"></span>
             </div>
         </div>
     </div>
@@ -654,6 +676,7 @@
                 document.getElementById('boat-name').value = this.data.boatName;
                 document.getElementById('arrival-date').value = this.data.date;
                 document.getElementById('diesel-liters').value = this.data.diesel.liters;
+                document.getElementById('diesel-price').value = this.data.diesel.pricePerLiter.toFixed(2); // Init Price Input
                 document.getElementById('report-note').value = this.data.note;
                 document.getElementById('market-percent').value = this.data.marketCommissionRate;
                 document.getElementById('skipper-percent').value = this.data.skipperCommissionRate;
@@ -678,6 +701,7 @@
                 
                 document.getElementById('boat-name').value = '';
                 document.getElementById('diesel-liters').value = '0';
+                document.getElementById('diesel-price').value = '277.00'; // Reset Price
                 document.getElementById('report-note').value = '';
                 document.getElementById('market-percent').value = '5';
                 document.getElementById('skipper-percent').value = '5';
@@ -773,8 +797,11 @@
 
             calculateDiesel() {
                 const liters = parseFloat(document.getElementById('diesel-liters').value) || 0;
+                const price = parseFloat(document.getElementById('diesel-price').value) || 0; // Updated to read Input
+                
                 this.data.diesel.liters = liters;
-                this.data.diesel.totalCost = liters * this.data.diesel.pricePerLiter;
+                this.data.diesel.pricePerLiter = price; // Updated to save
+                this.data.diesel.totalCost = liters * price;
                 this.updateAll();
                 this.saveReport();
             }
@@ -899,7 +926,6 @@
                 
                 const opEl = document.getElementById('p-owner-profit-loss');
                 opEl.textContent = this.formatLKR(profit.ownersProfit);
-                // UPDATED: Green -> #1e3c72
                 opEl.className = `font-extrabold text-xl md:text-3xl ${profit.ownersProfit >= 0 ? 'text-brand' : 'text-red-600'}`;
 
                 const bankDep = this.calculateBankDeposited(profit.ownersProfit, this.sumAmounts('loansSettled'), this.sumAmounts('salaries'));
@@ -909,8 +935,13 @@
                 
                 const bdEl = document.getElementById('bd-total');
                 bdEl.textContent = this.formatLKR(bankDep);
-                // UPDATED: Colors to match brand
                 bdEl.parentElement.className = `total-box mt-4 text-xl bg-blue-50 border-blue-900 ${bankDep >= 0 ? 'text-brand' : 'text-red-800'}`;
+
+                // Update Final Summary Card (New Section 09)
+                setTxt('ui-sum-net-sales', profit.netSales);
+                setTxt('ui-sum-deductibles', profit.deductibleExpenses);
+                setTxt('ui-sum-loans', this.sumAmounts('loansSettled') + this.sumAmounts('pendingLoans'));
+                setTxt('ui-sum-bank-deposited', bankDep);
             }
         }
 
