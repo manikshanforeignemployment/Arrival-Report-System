@@ -217,10 +217,10 @@
                 </div>
 
                 <div class="border-t pt-6">
-                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">Repairs</h3>
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">Repairs and other Expenses</h3>
                     <div id="boat-repairs-entries" class="space-y-2 mb-3"></div>
                     <div class="flex flex-col md:flex-row gap-3">
-                        <input type="text" id="br-desc" placeholder="Repair Description" class="p-2 border border-gray-300 rounded-lg flex-grow">
+                        <input type="text" id="br-desc" placeholder="Description" class="p-2 border border-gray-300 rounded-lg flex-grow">
                         <div class="flex gap-2">
                             <input type="number" step="0.01" id="br-amount" placeholder="0.00" class="p-2 border border-gray-300 rounded-lg w-full md:w-32">
                             <button onclick="report.addEntry('boatRepairs', 'br-desc', 'br-amount')" class="btn-brand font-medium py-2 px-4 rounded-lg shadow-sm">Add</button>
@@ -404,8 +404,10 @@
                     <div class="h-2"></div>
                     
                     <div class="flex justify-between items-center p-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg border border-gray-300 shadow-inner">
+                        <!-- Font Size Updated to Normal -->
                         <span class="font-bold text-gray-800 uppercase text-sm md:text-base">Owner's Profit / Loss (50%)</span>
-                        <span id="p-owner-profit-loss" class="font-extrabold text-xl md:text-3xl">0.00 LKR</span>
+                        <!-- UPDATED: Removed 'text-xl md:text-3xl' to match normal font size -->
+                        <span id="p-owner-profit-loss" class="font-bold">0.00 LKR</span>
                     </div>
                 </div>
 
@@ -423,7 +425,7 @@
                 </div>
             </div>
             
-            <!-- 09. Final Summary (New in UI to match PDF) -->
+            <!-- 09. Final Summary (Updated Fields) -->
             <div class="section-card p-5 md:p-8">
                 <h2 class="text-lg font-bold brand-text mb-4 flex items-center">
                     <span class="bg-blue-100 text-brand text-xs px-2 py-1 rounded mr-2">09</span>
@@ -432,15 +434,13 @@
                  <div class="space-y-3 text-base md:text-lg">
                     <div class="flex justify-between"><span class="font-medium text-gray-600">Net Sales</span><span id="ui-sum-net-sales" class="font-bold">0.00 LKR</span></div>
                     <div class="flex justify-between"><span class="font-medium text-gray-600">Total Deductible Expenses</span><span id="ui-sum-deductibles" class="font-bold">0.00 LKR</span></div>
-                    <div class="flex justify-between"><span class="font-medium text-gray-600">Total Loan Liability</span><span id="ui-sum-loans" class="font-bold">0.00 LKR</span></div>
-                    <div class="total-box mt-4 text-xl bg-blue-100 border-blue-900 text-brand">
-                        <span>FINAL BANK DEPOSIT</span>
-                        <span id="ui-sum-bank-deposited">0.00 LKR</span>
-                    </div>
+                    <div class="flex justify-between"><span class="font-medium text-gray-600">Loans Settled</span><span id="ui-sum-loans-settled" class="font-bold">0.00 LKR</span></div>
+                    <div class="flex justify-between"><span class="font-medium text-gray-600">Due Loans</span><span id="ui-sum-due-loans" class="font-bold">0.00 LKR</span></div>
+                    <div class="flex justify-between"><span class="font-medium text-gray-600">Current Boat Value</span><span id="ui-sum-boat-value" class="font-bold">0.00 LKR</span></div>
                 </div>
             </div>
 
-            <!-- 10. Bank Summary (Moved) -->
+            <!-- 10. Bank Summary -->
             <div class="section-card p-5 md:p-8">
                 <h2 class="text-lg font-bold brand-text mb-4 flex items-center">
                     <span class="bg-blue-100 text-brand text-xs px-2 py-1 rounded mr-2">10</span>
@@ -457,7 +457,7 @@
                 </div>
             </div>
             
-            <!-- 11. Notes (Moved to Bottom) -->
+            <!-- 11. Notes -->
             <div class="section-card p-5 md:p-8">
                 <h2 class="text-lg font-bold brand-text mb-4 flex items-center">
                     <span class="bg-blue-100 text-brand text-xs px-2 py-1 rounded mr-2">11</span>
@@ -521,9 +521,10 @@
                 <tr class="pdf-total-row" style="font-weight:bold;"><td style="font-weight:normal;">Subtotal Value</td><td class="text-right" id="pdf-cbv-total">0.00</td></tr>
             </table>
             <table class="pdf-table mt-2">
-                <tr class="bg-gray-50"><td colspan="2" class="font-semibold">Repairs</td></tr>
+                <!-- Updated Subsection Title in PDF -->
+                <tr class="bg-gray-50"><td colspan="2" class="font-semibold">Repairs and other Expenses</td></tr>
                 <tbody id="pdf-br-breakdown"></tbody>
-                <tr class="pdf-total-row" style="font-weight:bold;"><td style="font-weight:normal;">Subtotal Repairs</td><td class="text-right" id="pdf-br-total">0.00</td></tr>
+                <tr class="pdf-total-row" style="font-weight:bold;"><td style="font-weight:normal;">Subtotal Repairs and other Expenses</td><td class="text-right" id="pdf-br-total">0.00</td></tr>
             </table>
         </div>
 
@@ -579,18 +580,19 @@
             </table>
         </div>
 
-        <!-- 9. Final Summary (Calculated Totals) -->
+        <!-- 9. Final Summary (Updated Fields) -->
         <div class="pdf-section">
             <div class="pdf-header-bar">9. FINAL SUMMARY</div>
             <table class="pdf-table">
                 <tr><td class="font-bold">Net Sales</td><td class="text-right" id="sum2-net-sales">0.00</td></tr>
                 <tr><td class="font-bold">Total Deductible Expenses</td><td class="text-right" id="sum2-deductible-expenses">0.00</td></tr>
-                <tr><td class="font-bold">Total Loan Liability</td><td class="text-right" id="sum2-loan-liability">0.00</td></tr>
-                <tr class="bg-blue-100"><td class="font-bold text-brand">FINAL BANK DEPOSIT</td><td class="text-right font-bold text-brand" id="sum2-bank-deposited">0.00</td></tr>
+                <tr><td class="font-bold">Loans Settled</td><td class="text-right" id="sum2-loans-settled">0.00</td></tr>
+                <tr><td class="font-bold">Due Loans</td><td class="text-right" id="sum2-due-loans">0.00</td></tr>
+                <tr><td class="font-bold">Current Boat Value</td><td class="text-right" id="sum2-boat-value">0.00</td></tr>
             </table>
         </div>
 
-        <!-- 10. Bank Summary (Moved to 10 in PDF) -->
+        <!-- 10. Bank Summary -->
         <div class="pdf-section">
             <div class="pdf-header-bar">10. BANK DEPOSITED SUMMARY</div>
             <table class="pdf-table">
@@ -601,7 +603,7 @@
             </table>
         </div>
         
-        <!-- 11. Notes (Moved to 11 in PDF) -->
+        <!-- 11. Notes -->
         <div class="pdf-section">
              <div class="pdf-header-bar">11. NOTES</div>
              <div class="mt-2 p-2 border border-gray-200" style="white-space: pre-wrap; word-break: break-word; font-size: 11px;">
@@ -676,7 +678,7 @@
                 document.getElementById('boat-name').value = this.data.boatName;
                 document.getElementById('arrival-date').value = this.data.date;
                 document.getElementById('diesel-liters').value = this.data.diesel.liters;
-                document.getElementById('diesel-price').value = this.data.diesel.pricePerLiter.toFixed(2); // Init Price Input
+                document.getElementById('diesel-price').value = this.data.diesel.pricePerLiter.toFixed(2); 
                 document.getElementById('report-note').value = this.data.note;
                 document.getElementById('market-percent').value = this.data.marketCommissionRate;
                 document.getElementById('skipper-percent').value = this.data.skipperCommissionRate;
@@ -701,7 +703,7 @@
                 
                 document.getElementById('boat-name').value = '';
                 document.getElementById('diesel-liters').value = '0';
-                document.getElementById('diesel-price').value = '277.00'; // Reset Price
+                document.getElementById('diesel-price').value = '277.00'; 
                 document.getElementById('report-note').value = '';
                 document.getElementById('market-percent').value = '5';
                 document.getElementById('skipper-percent').value = '5';
@@ -797,10 +799,10 @@
 
             calculateDiesel() {
                 const liters = parseFloat(document.getElementById('diesel-liters').value) || 0;
-                const price = parseFloat(document.getElementById('diesel-price').value) || 0; // Updated to read Input
+                const price = parseFloat(document.getElementById('diesel-price').value) || 0; 
                 
                 this.data.diesel.liters = liters;
-                this.data.diesel.pricePerLiter = price; // Updated to save
+                this.data.diesel.pricePerLiter = price; 
                 this.data.diesel.totalCost = liters * price;
                 this.updateAll();
                 this.saveReport();
@@ -924,9 +926,10 @@
                 setTxt('p-final-balance', profit.finalBalance);
                 setTxt('p-crew-total', profit.crewShareTotal);
                 
+                // OWNER PROFIT FONT SIZE CHANGE: Removed 'text-xl md:text-3xl' so it uses standard font size
                 const opEl = document.getElementById('p-owner-profit-loss');
                 opEl.textContent = this.formatLKR(profit.ownersProfit);
-                opEl.className = `font-extrabold text-xl md:text-3xl ${profit.ownersProfit >= 0 ? 'text-brand' : 'text-red-600'}`;
+                opEl.className = `font-bold ${profit.ownersProfit >= 0 ? 'text-brand' : 'text-red-600'}`;
 
                 const bankDep = this.calculateBankDeposited(profit.ownersProfit, this.sumAmounts('loansSettled'), this.sumAmounts('salaries'));
                 setTxt('bd-owner-profit', profit.ownersProfit);
@@ -937,11 +940,11 @@
                 bdEl.textContent = this.formatLKR(bankDep);
                 bdEl.parentElement.className = `total-box mt-4 text-xl bg-blue-50 border-blue-900 ${bankDep >= 0 ? 'text-brand' : 'text-red-800'}`;
 
-                // Update Final Summary Card (New Section 09)
                 setTxt('ui-sum-net-sales', profit.netSales);
                 setTxt('ui-sum-deductibles', profit.deductibleExpenses);
-                setTxt('ui-sum-loans', this.sumAmounts('loansSettled') + this.sumAmounts('pendingLoans'));
-                setTxt('ui-sum-bank-deposited', bankDep);
+                setTxt('ui-sum-loans-settled', this.sumAmounts('loansSettled'));
+                setTxt('ui-sum-due-loans', this.sumAmounts('pendingLoans'));
+                setTxt('ui-sum-boat-value', this.sumAmounts('currentBoatValues'));
             }
         }
 
@@ -1010,10 +1013,10 @@
 
             setText('sum2-net-sales', profit.netSales);
             setText('sum2-deductible-expenses', profit.deductibleExpenses);
-            setText('sum2-loan-liability', report.sumAmounts('loansSettled') + report.sumAmounts('pendingLoans'));
-            setText('sum2-bank-deposited', bankDep);
+            setText('sum2-loans-settled', report.sumAmounts('loansSettled'));
+            setText('sum2-due-loans', report.sumAmounts('pendingLoans'));
+            setText('sum2-boat-value', report.sumAmounts('currentBoatValues'));
             
-            // Ensure proper text content handling for newlines
             document.getElementById('pdf-note-content').textContent = report.data.note;
 
             template.style.display = 'block';
